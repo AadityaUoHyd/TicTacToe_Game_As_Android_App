@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TicTacToe by Aaditya</title>
+  <style>
+    body {
+      background-color: #8B0000; /* Maroon */
+      color: #000;
+      font-family: 'Pacifico', cursive;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      position: relative;
+    }
+
+    #board {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-gap: 10px;
+      text-align: center;
+    }
+
+    .cell {
+      position: relative;
+      width: 100px;
+      height: 100px;
+      font-size: 2em;
+      line-height: 100px;
+      border: 2px solid #000;
+      cursor: pointer;
+      background-color: #fff;
+      color: #333;
+      transition: background-color 0.3s ease;
+    }
+
+    .cell:hover {
+      background-color: #eee;
+    }
+
+    #reset-button {
+      font-size: 1.2em;
+      margin-left: -230px;
+      margin-top: 400px;
+      padding: 10px 20px;
+      cursor: pointer;
+      background-color: #393;
+      color: #yyy;
+      border: 6px;
+      border-radius: 5px;
+      transition: background-color 0.3s ease;
+    }
+
+    #reset-button:hover {
+      background-color: #555;
+    }
+
+    #overlay {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      z-index: 2;
+    }
+
+    #overlay-message {
+      font-size: 2em;
+      color: #00FF00;
+      margin-bottom: 20px;
+    }
+
+    #overlay-reset-button {
+      font-size: 1.5em;
+      padding: 10px 20px;
+      margin-left: 90px;
+      cursor: pointer;
+      background-color: #333;
+      color: #fff;
+      border: none;
+      border-radius: 9px;
+      transition: background-color 0.3s ease;
+    }
+
+    #overlay-reset-button:hover {
+      background-color: #555;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="board"></div>
+
+  <div id="overlay">
+    <div id="overlay-message"></div>
+    <button id="overlay-reset-button" onclick="resetGame()">Play Again</button>
+  </div>
+
+  
+  <button id="reset-button" onclick="resetGame()">Reset Game</button>
+
+  <script>
+    // Function to check the winner
+    function checkWinner() {
+      const lines = [
+        [0, 1, 2],
+        [3, 4, 5],
+        [6, 7, 8],
+        [0, 3, 6],
+        [1, 4, 7],
+        [2, 5, 8],
+        [0, 4, 8],
+        [2, 4, 6]
+      ];
+
+      for (let i = 0; i < lines.length; i++) {
+        const [a, b, c] = lines[i];
+        if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+          return board[a];
+        }
+      }
+
+      return board.includes('') ? null : 'draw';
+    }
+
+    // Function to render the board
+    function renderBoard() {
+      const boardElement = document.getElementById('board');
+      boardElement.innerHTML = '';
+
+      for (let i = 0; i < 9; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        cell.setAttribute('data-index', i);
+        cell.textContent = board[i];
+        cell.addEventListener('click', handleCellClick);
+        boardElement.appendChild(cell);
+      }
+    }
+
+    // Function to handle cell click
+    function handleCellClick(event) {
+      const index = event.target.getAttribute('data-index');
+
+      if (board[index] === '' && !gameOver) {
+        board[index] = currentPlayer;
+        renderBoard();
+
+        const winner = checkWinner();
+        if (winner) {
+          displayOverlay(winner === 'draw' ? 'It\'s a draw!' : (winner === 'O' ? 'Sorry! You Lost.' : 'Congrats! You Won.'));
+        } else {
+          currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+          if (currentPlayer === 'O') {
+            setTimeout(makeAutomatedMove, 500); // Delay for a better user experience
+          }
+        }
+      }
+    }
+
+    // Function to make automated move
+    function makeAutomatedMove() {
+      const emptyCells = board.reduce((acc, value, index) => {
+        if (value === '') {
+          acc.push(index);
+        }
+        return acc;
+      }, []);
+
+      const randomIndex = Math.floor(Math.random() * emptyCells.length);
+      const automatedMove = emptyCells[randomIndex];
+
+      board[automatedMove] = currentPlayer;
+      renderBoard();
+
+      const winner = checkWinner();
+      if (winner) {
+        displayOverlay(winner === 'draw' ? 'It\'s a draw!' : (winner === 'O' ? 'Sorry! You Lost.' : 'Congrats! You Won.'));
+      } else {
+        currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+      }
+    }
+
+    // Function to reset the game
+    function resetGame() {
+      board = Array(9).fill('');
+      currentPlayer = 'X';
+      gameOver = false;
+      renderBoard();
+      hideOverlay();
+    }
+
+    // Function to display overlay
+    function displayOverlay(message) {
+      const overlay = document.getElementById('overlay');
+      const overlayMessage = document.getElementById('overlay-message');
+
+      overlayMessage.textContent = message;
+      overlay.style.display = 'flex';
+    }
+
+    // Function to hide overlay
+    function hideOverlay() {
+      const overlay = document.getElementById('overlay');
+      overlay.style.display = 'none';
+    }
+
+    // Initial setup
+    let board = Array(9).fill('');
+    let currentPlayer = 'X';
+    let gameOver = false;
+    renderBoard();
+  </script>
+</body>
+</html>
