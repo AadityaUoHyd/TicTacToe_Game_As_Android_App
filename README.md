@@ -9,4 +9,4 @@
 - Extract the zip file and go into android folder. Copy your "app-release.apk" file.
 - Put it in your Google Drive, so that anybody who want to install it in android phone can download it. Ensure public permission on share for that apk file.
 - Here is mine : https://drive.google.com/file/d/1W5TTn0xBouGG5oa63AYYX7YnK5Lnnsh7/view?usp=drive_link
-- Download the TicTacToe game from given above link, and play.
+- Download the TicTacToe game from given above link into your Android Phone, and Play... 	:wink:
